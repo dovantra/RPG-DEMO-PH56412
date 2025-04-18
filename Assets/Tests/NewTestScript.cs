@@ -52,4 +52,46 @@ public class NewTestScript
         Assert.Greater(player.transform.position.y, startY);
 
     }
+
+
+    [UnityTest]
+    public IEnumerator StartGame_HidesCanvas()
+    {
+        // Tạo canvas giả
+        var canvasGO = new GameObject("Canvas");
+        canvasGO.SetActive(true);
+
+        // Tạo UI Manager
+        var uiManagerGO = new GameObject("UIMANAGER");
+        var uiManager = uiManagerGO.AddComponent<UIMANAGER>();
+        uiManager.canvasStartGame = canvasGO;
+
+        // Gọi StartGame
+        uiManager.StartGame();
+
+        yield return null;
+
+        Assert.IsFalse(canvasGO.activeSelf, "Canvas should be hidden after StartGame is called.");
+    }
+
+    [UnityTest]
+    public IEnumerator PauseGame_TogglesTimeScale()
+    {
+        // Tạo UI Manager
+        var uiManagerGO = new GameObject("UIMANAGER");
+        var uiManager = uiManagerGO.AddComponent<UIMANAGER>();
+
+        // Đặt thời gian ban đầu là 1
+        Time.timeScale = 1f;
+
+        // Gọi PauseGame → tạm dừng
+        uiManager.PauseGame();
+        yield return null;
+        Assert.AreEqual(0f, Time.timeScale, "Time should be paused (0) after first PauseGame call.");
+
+        // Gọi lần 2 → chạy lại
+        uiManager.PauseGame();
+        yield return null;
+        Assert.AreEqual(1f, Time.timeScale, "Time should be resumed (1) after second PauseGame call.");
+    }
 }
